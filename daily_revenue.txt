@@ -1,0 +1,12 @@
+{"date": "2026-09-04", "time": "17:27:10", "customer": "Customer 1", "paymentMethod": "GPay", "total": 59.0}
+{"date": "2026-09-04", "time": "17:27:27", "customer": "Customer 2", "paymentMethod": "Card", "total": 424.8}
+{"date": "2026-09-04", "time": "17:27:41", "customer": "Customer 3", "paymentMethod": "Card", "total": 566.4}
+{"date": "2026-09-04", "time": "17:35:35", "customer": "Customer 2", "paymentMethod": "GPay", "total": 200.6}
+{"date": "2026-09-04", "time": "20:39:31", "customer": "Customer 1", "paymentMethod": "Card", "total": 625.4}
+{"date": "2026-09-05", "time": "08:59:28", "customer": "Customer 1", "paymentMethod": "Card", "total": 59.0}
+{"date": "2026-09-11", "time": "19:42:31", "customer": "Customer 1", "paymentMethod": "Cash", "total": 59.0}
+{"date": "2026-09-11", "time": "19:46:40", "customer": "Customer 1", "paymentMethod": "GPay", "total": 59.0}
+{"date": "2026-09-11", "time": "19:59:39", "customer": "Customer 2", "paymentMethod": "GPay", "total": 50.0}
+{"date": "2026-09-11", "time": "20:11:24", "customer": "Customer 8", "paymentMethod": "GPay", "total": 480.0}
+{"date": "2026-09-11", "time": "20:29:25", "customer": "Customer 9", "paymentMethod": "Cash", "total": 120.0}
+{"date": "2026-09-11", "time": "20:41:18", "customer": "Customer 10", "paymentMethod": "GPay", "total": 480.0}

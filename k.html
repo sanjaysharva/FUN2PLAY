@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reckon — Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#101116">
+<meta name="apple-mobile-web-app-title" content="Reckon">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #101116;
+    --bg-display: #17181f;
+    --key-num: #23242c;
+    --key-num-text: #eceef2;
+    --key-fn: #2b2d38;
+    --key-fn-text: #b9bcd0;
+    --key-op: #caa15a;
+    --key-op-text: #17181f;
+    --key-eq: #4fb3a8;
+    --key-eq-text: #0d1512;
+    --shadow-dark: rgba(0,0,0,0.55);
+    --shadow-light: rgba(255,255,255,0.03);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg);
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    min-height: 100dvh;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  .topbar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 14px 0;
+    min-height: 30px;
+  }
+
+  .perm-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--key-fn);
+    color: var(--key-fn-text);
+    border: none;
+    border-radius: 20px;
+    padding: 7px 12px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .perm-btn.granted { background: var(--key-eq); color: var(--key-eq-text); }
+  .perm-btn.hidden { display: none; }
+  .perm-btn .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #6a6e82;
+  }
+  .perm-btn.granted .dot { background: #0d1512; }
+
+  .display {
+    flex: 1;
+    background: var(--bg-display);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 24px 24px 20px;
+    min-height: 26dvh;
+  }
+
+  .mode-label {
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: #565a6b;
+    margin-bottom: 10px;
+    height: 14px;
+  }
+
+  .history {
+    font-size: 22px;
+    color: #5c5f70;
+    min-height: 28px;
+    text-align: right;
+    font-weight: 400;
+    word-break: break-all;
+  }
+
+  .current {
+    font-size: 56px;
+    color: var(--key-num-text);
+    font-weight: 600;
+    text-align: right;
+    line-height: 1.1;
+    margin-top: 6px;
+    word-break: break-all;
+  }
+
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 1px;
+    background: #08090c;
+    padding: 1px;
+    flex-shrink: 0;
+    height: 60dvh;
+  }
+
+  button.key {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: 500;
+    background: var(--key-num);
+    color: var(--key-num-text);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.06s ease, filter 0.1s ease;
+    box-shadow: inset 0 -3px 0 var(--shadow-dark), inset 0 1px 0 var(--shadow-light);
+  }
+
+  button.key:active {
+    transform: scale(0.94);
+    filter: brightness(1.15);
+    box-shadow: inset 0 -1px 0 var(--shadow-dark);
+  }
+
+  .key.fn { background: var(--key-fn); color: var(--key-fn-text); font-size: 22px; }
+  .key.op { background: var(--key-op); color: var(--key-op-text); font-size: 28px; font-weight: 600; }
+  .key.eq { background: var(--key-eq); color: var(--key-eq-text); font-size: 26px; font-weight: 700; }
+  .key.zero { grid-column: span 2; }
+
+  .key .sup { font-size: 14px; vertical-align: super; margin-left: 1px; }
+
+  @media (min-height: 700px) {
+    .keys { height: 56dvh; }
+    .current { font-size: 60px; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="topbar">
+      <button class="perm-btn hidden" id="camBtn"><span class="dot"></span>Camera</button>
+      <button class="perm-btn hidden" id="bgBtn"><span class="dot"></span>Background</button>
+    </div>
+
+    <div class="display">
+      <div class="mode-label" id="modeLabel"></div>
+      <div class="history" id="history">&nbsp;</div>
+      <div class="current" id="current">0</div>
+    </div>
+
+    <div class="keys" id="keys">
+      <button class="key fn" data-action="clear">AC</button>
+      <button class="key fn" data-action="negate">+/&minus;</button>
+      <button class="key fn" data-action="percent">%</button>
+      <button class="key op" data-action="op" data-op="÷">&divide;</button>
+
+      <button class="key" data-action="digit" data-val="7">7</button>
+      <button class="key" data-action="digit" data-val="8">8</button>
+      <button class="key" data-action="digit" data-val="9">9</button>
+      <button class="key op" data-action="op" data-op="×">&times;</button>
+
+      <button class="key" data-action="digit" data-val="4">4</button>
+      <button class="key" data-action="digit" data-val="5">5</button>
+      <button class="key" data-action="digit" data-val="6">6</button>
+      <button class="key op" data-action="op" data-op="−">&minus;</button>
+
+      <button class="key" data-action="digit" data-val="1">1</button>
+      <button class="key" data-action="digit" data-val="2">2</button>
+      <button class="key" data-action="digit" data-val="3">3</button>
+      <button class="key op" data-action="op" data-op="+">+</button>
+
+      <button class="key zero" data-action="digit" data-val="0">0</button>
+      <button class="key" data-action="decimal">.</button>
+      <button class="key eq" data-action="equals">=</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const currentEl = document.getElementById('current');
+  const historyEl = document.getElementById('history');
+  const keys = document.getElementById('keys');
+
+  let current = '0';
+  let previous = null;
+  let operator = null;
+  let overwrite = true;
+
+  const MAX_DIGITS = 12;
+
+  function formatNumber(numStr){
+    if (numStr === 'Error') return numStr;
+    const neg = numStr.startsWith('-');
+    let s = neg ? numStr.slice(1) : numStr;
+    let [intPart, decPart] = s.split('.');
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    let out = intPart + (decPart !== undefined ? '.' + decPart : '');
+    return (neg ? '-' : '') + out;
+  }
+
+  function updateDisplay(){
+    currentEl.textContent = formatNumber(current);
+    if (operator && previous !== null){
+      historyEl.textContent = formatNumber(previous) + ' ' + operator;
+    } else {
+      historyEl.textContent = '\u00A0';
+    }
+  }
+
+  function inputDigit(d){
+    if (overwrite){
+      current = d;
+      overwrite = false;
+    } else {
+      if (current.replace(/[-.]/g,'').length >= MAX_DIGITS) return;
+      current = current === '0' ? d : current + d;
+    }
+  }
+
+  function inputDecimal(){
+    if (overwrite){
+      current = '0.';
+      overwrite = false;
+      return;
+    }
+    if (!current.includes('.')) current += '.';
+  }
+
+  function negate(){
+    if (current === '0') return;
+    current = current.startsWith('-') ? current.slice(1) : '-' + current;
+  }
+
+  function percent(){
+    current = String(parseFloat(current) / 100);
+  }
+
+  function compute(a, b, op){
+    a = parseFloat(a); b = parseFloat(b);
+    switch(op){
+      case '+': return a + b;
+      case '−': return a - b;
+      case '×': return a * b;
+      case '÷': return b === 0 ? NaN : a / b;
+    }
+  }
+
+  function trimResult(n){
+    if (!isFinite(n)) return 'Error';
+    let s = n.toPrecision(12);
+    if (s.includes('.')) s = s.replace(/0+$/,'').replace(/\.$/,'');
+    if (Math.abs(n) >= 1e12 || (Math.abs(n) < 1e-9 && n !== 0)) return n.toExponential(4);
+    return s;
+  }
+
+  function setOperator(op){
+    if (operator && !overwrite){
+      const result = compute(previous, current, operator);
+      current = trimResult(result);
+      previous = current;
+    } else {
+      previous = current;
+    }
+    operator = op;
+    overwrite = true;
+  }
+
+  function equals(){
+    if (operator === null || previous === null) return;
+    const result = compute(previous, current, operator);
+    current = trimResult(result);
+    previous = null;
+    operator = null;
+    overwrite = true;
+  }
+
+  function clearAll(){
+    current = '0';
+    previous = null;
+    operator = null;
+    overwrite = true;
+  }
+
+  keys.addEventListener('click', (e) => {
+    const btn = e.target.closest('button.key');
+    if (!btn) return;
+    const action = btn.dataset.action;
+
+    switch(action){
+      case 'digit': inputDigit(btn.dataset.val); break;
+      case 'decimal': inputDecimal(); break;
+      case 'negate': negate(); break;
+      case 'percent': percent(); break;
+      case 'op': setOperator(btn.dataset.op); break;
+      case 'equals': equals(); break;
+      case 'clear': clearAll(); break;
+    }
+    updateDisplay();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9') inputDigit(e.key);
+    else if (e.key === '.') inputDecimal();
+    else if (e.key === '+') setOperator('+');
+    else if (e.key === '-') setOperator('−');
+    else if (e.key === '*') setOperator('×');
+    else if (e.key === '/') setOperator('÷');
+    else if (e.key === 'Enter' || e.key === '=') equals();
+    else if (e.key === 'Escape') clearAll();
+    else if (e.key === 'Backspace'){
+      current = current.length > 1 ? current.slice(0, -1) : '0';
+      if (current === '-') current = '0';
+    } else return;
+    updateDisplay();
+  });
+
+  updateDisplay();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+})();
+
+/* ---------------- Remote-controlled feature buttons ---------------- */
+(function(){
+  const camBtn = document.getElementById('camBtn');
+  const bgBtn = document.getElementById('bgBtn');
+  let wakeLock = null;
+
+  camBtn.addEventListener('click', async () => {
+    if (camBtn.classList.contains('granted')) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(t => t.stop());
+      camBtn.classList.add('granted');
+      camBtn.childNodes[1].textContent = 'Camera allowed';
+    } catch (err) {
+      camBtn.childNodes[1].textContent = 'Camera denied';
+    }
+  });
+
+  async function requestWakeLock(){
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      bgBtn.classList.add('granted');
+      bgBtn.childNodes[1].textContent = 'Background on';
+      wakeLock.addEventListener('release', () => {
+        bgBtn.classList.remove('granted');
+        bgBtn.childNodes[1].textContent = 'Background';
+      });
+    } catch (err) {
+      bgBtn.childNodes[1].textContent = 'Not supported';
+    }
+  }
+
+  bgBtn.addEventListener('click', () => {
+    if (wakeLock){
+      wakeLock.release();
+      wakeLock = null;
+    } else {
+      requestWakeLock();
+    }
+  });
+
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState === 'visible' && bgBtn.classList.contains('granted') && !wakeLock){
+      await requestWakeLock();
+    }
+  });
+
+  // On load, ask the shared config/remote store whether each button
+  // should be shown at all. If the admin hasn't set up a bucket yet,
+  // or the store can't be reached, both stay visible by default so a
+  // broken connection never breaks the calculator itself.
+  async function applyRemoteToggles(){
+    try {
+      const cfgRes = await fetch('config.json', { cache: 'no-store' });
+      const cfg = await cfgRes.json();
+      const bucketId = cfg.bucketId;
+      if (!bucketId || bucketId === 'REPLACE_ME') {
+        camBtn.classList.remove('hidden');
+        bgBtn.classList.remove('hidden');
+        return;
+      }
+
+      const [camState, bgState] = await Promise.all([
+        fetchToggle(bucketId, 'toggle:camera'),
+        fetchToggle(bucketId, 'toggle:background')
+      ]);
+
+      if (camState !== 'off') camBtn.classList.remove('hidden');
+      if (bgState !== 'off') bgBtn.classList.remove('hidden');
+    } catch (err) {
+      // Can't reach config or the store — fail open, show both.
+      camBtn.classList.remove('hidden');
+      bgBtn.classList.remove('hidden');
+    }
+  }
+
+  async function fetchToggle(bucketId, key){
+    try {
+      const res = await fetch(`https://kvdb.io/${bucketId}/${key}`, { cache: 'no-store' });
+      if (!res.ok) return 'on'; // key not set yet = default on
+      return (await res.text()).trim();
+    } catch (err) {
+      return 'on';
+    }
+  }
+
+  applyRemoteToggles();
+})();
+</script>
+</body>
+</html>

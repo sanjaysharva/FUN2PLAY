@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reckon — Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#101116">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #101116;
+    --panel: #17181f;
+    --key-num: #23242c;
+    --text: #eceef2;
+    --muted: #6a6e82;
+    --fn: #2b2d38;
+    --fn-text: #b9bcd0;
+    --accent: #4fb3a8;
+    --accent-text: #0d1512;
+    --danger: #e88787;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  body { display: flex; justify-content: center; min-height: 100dvh; }
+  .app {
+    width: 100%; max-width: 480px; min-height: 100dvh;
+    display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* PIN screen (reused pattern) */
+  .pin-screen {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px; gap: 22px;
+  }
+  .pin-title { color: var(--text); font-size: 17px; font-weight: 600; }
+  .pin-sub { color: var(--muted); font-size: 13px; text-align: center; max-width: 280px; }
+  .pin-dots { display: flex; gap: 14px; }
+  .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid #3a3c48; background: transparent; }
+  .pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+  .pin-pad { display: grid; grid-template-columns: repeat(3, 64px); gap: 14px; }
+  .pin-key {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--key-num); color: var(--text);
+    border: none; font-family: inherit; font-size: 22px; font-weight: 500; cursor: pointer;
+  }
+  .pin-key:active { filter: brightness(1.2); }
+  .pin-error { color: var(--danger); font-size: 13px; height: 16px; }
+
+  /* Admin panel */
+  .panel { display: none; flex: 1; flex-direction: column; }
+  .panel.open { display: flex; }
+  .header {
+    padding: 20px; padding-top: calc(20px + env(safe-area-inset-top));
+    border-bottom: 1px solid #1e2029;
+  }
+  .header h1 { margin: 0; font-size: 19px; color: var(--text); font-weight: 600; }
+  .header p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+
+  .setup {
+    margin: 20px; padding: 18px; background: var(--panel);
+    border-radius: 14px; color: var(--muted); font-size: 13px; line-height: 1.6;
+  }
+  .setup code {
+    display: block; background: #0d0e12; color: var(--accent);
+    padding: 10px 12px; border-radius: 8px; margin: 10px 0;
+    font-size: 14px; word-break: break-all; user-select: all;
+  }
+  .setup button {
+    background: var(--accent); color: var(--accent-text); border: none;
+    border-radius: 10px; padding: 10px 16px; font-family: inherit;
+    font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px;
+  }
+  .setup .status { margin-top: 10px; font-size: 12px; }
+
+  .toggles { padding: 8px 20px; display: flex; flex-direction: column; gap: 4px; }
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 4px; border-bottom: 1px solid #1e2029;
+  }
+  .toggle-row .label { color: var(--text); font-size: 15px; font-weight: 500; }
+  .toggle-row .sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+  .switch { width: 46px; height: 27px; border-radius: 14px; background: #2b2d38; position: relative; border: none; cursor: pointer; flex-shrink: 0; }
+  .switch.on { background: var(--accent); }
+  .switch::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 21px; height: 21px; border-radius: 50%; background: #eceef2;
+    transition: transform 0.15s ease;
+  }
+  .switch.on::after { transform: translateX(19px); }
+  .switch:disabled { opacity: 0.4; cursor: default; }
+
+  .save-note { padding: 4px 24px; color: var(--muted); font-size: 12px; min-height: 18px; }
+</style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="pin-screen" id="pinScreen">
+      <div class="pin-title" id="pinTitle">Enter admin PIN</div>
+      <div class="pin-sub" id="pinSub">This PIN is only stored on this device.</div>
+      <div class="pin-dots" id="pinDots"></div>
+      <div class="pin-error" id="pinError">&nbsp;</div>
+      <div class="pin-pad" id="pinPad">
+        <button class="pin-key" data-d="1">1</button>
+        <button class="pin-key" data-d="2">2</button>
+        <button class="pin-key" data-d="3">3</button>
+        <button class="pin-key" data-d="4">4</button>
+        <button class="pin-key" data-d="5">5</button>
+        <button class="pin-key" data-d="6">6</button>
+        <button class="pin-key" data-d="7">7</button>
+        <button class="pin-key" data-d="8">8</button>
+        <button class="pin-key" data-d="9">9</button>
+        <button class="pin-key" data-d="back">&larr;</button>
+        <button class="pin-key" data-d="0">0</button>
+        <div></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel">
+      <div class="header">
+        <h1>Reckon — Admin</h1>
+        <p>Control what shows up on the calculator page.</p>
+      </div>
+
+      <div class="setup" id="setup" style="display:none;">
+        <div id="setupText">This admin page isn't linked to your calculator yet.</div>
+        <button id="createBucketBtn">Create remote link</button>
+        <div class="status" id="setupStatus"></div>
+      </div>
+
+      <div class="toggles" id="toggles" style="display:none;">
+        <div class="toggle-row">
+          <div>
+            <div class="label">Camera button</div>
+            <div class="sub">Shows the Camera permission button on the calculator</div>
+          </div>
+          <button class="switch" id="camSwitch"></button>
+        </div>
+        <div class="toggle-row">
+          <div>
+            <div class="label">Background button</div>
+            <div class="sub">Shows the Background (wake lock) button on the calculator</div>
+          </div>
+          <button class="switch" id="bgSwitch"></button>
+        </div>
+      </div>
+      <div class="save-note" id="saveNote">&nbsp;</div>
+    </div>
+
+  </div>
+
+<script>
+(function(){
+  const PIN_LEN = 4;
+  const pinScreen = document.getElementById('pinScreen');
+  const panel = document.getElementById('panel');
+  const pinTitle = document.getElementById('pinTitle');
+  const pinSub = document.getElementById('pinSub');
+  const pinDots = document.getElementById('pinDots');
+  const pinError = document.getElementById('pinError');
+  const pinPad = document.getElementById('pinPad');
+
+  let mode = 'enter'; // 'enter' | 'create' | 'confirm'
+  let entry = '';
+  let firstNewPin = '';
+
+  async function hashPin(pin){
+    const enc = new TextEncoder().encode('reckon-admin-salt-' + pin);
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function renderDots(){
+    pinDots.innerHTML = '';
+    for (let i = 0; i < PIN_LEN; i++){
+      const d = document.createElement('div');
+      d.className = 'pin-dot' + (i < entry.length ? ' filled' : '');
+      pinDots.appendChild(d);
+    }
+  }
+
+  function shake(){
+    pinDots.style.transform = 'translateX(-8px)';
+    setTimeout(() => pinDots.style.transform = 'translateX(8px)', 80);
+    setTimeout(() => pinDots.style.transform = '', 160);
+  }
+
+  async function begin(){
+    entry = '';
+    pinError.textContent = '\u00A0';
+    const storedHash = localStorage.getItem('reckonAdminPinHash');
+    if (storedHash){
+      mode = 'enter';
+      pinTitle.textContent = 'Enter admin PIN';
+      pinSub.textContent = 'This PIN is only stored on this device.';
+    } else {
+      mode = 'create';
+      pinTitle.textContent = 'Create an admin PIN';
+      pinSub.textContent = 'Choose a 4-digit PIN for this device.';
+    }
+    renderDots();
+  }
+
+  async function onComplete(){
+    if (mode === 'enter'){
+      const storedHash = localStorage.getItem('reckonAdminPinHash');
+      const h = await hashPin(entry);
+      if (h === storedHash){
+        showPanel();
+      } else {
+        pinError.textContent = 'Incorrect PIN';
+        shake(); entry = ''; renderDots();
+      }
+    } else if (mode === 'create'){
+      firstNewPin = entry; entry = '';
+      mode = 'confirm';
+      pinTitle.textContent = 'Confirm your PIN';
+      pinSub.textContent = 'Enter it once more.';
+      renderDots();
+    } else if (mode === 'confirm'){
+      if (entry === firstNewPin){
+        localStorage.setItem('reckonAdminPinHash', await hashPin(entry));
+        showPanel();
+      } else {
+        pinError.textContent = 'PINs didn\u2019t match. Try again.';
+        shake(); entry = ''; firstNewPin = '';
+        mode = 'create';
+        pinTitle.textContent = 'Create an admin PIN';
+        pinSub.textContent = 'Choose a 4-digit PIN for this device.';
+        renderDots();
+      }
+    }
+  }
+
+  pinPad.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pin-key');
+    if (!btn) return;
+    const d = btn.dataset.d;
+    if (d === 'back'){ entry = entry.slice(0, -1); renderDots(); return; }
+    if (entry.length >= PIN_LEN) return;
+    entry += d;
+    pinError.textContent = '\u00A0';
+    renderDots();
+    if (entry.length === PIN_LEN) onComplete();
+  });
+
+  function showPanel(){
+    pinScreen.style.display = 'none';
+    panel.classList.add('open');
+    initRemote();
+  }
+
+  begin();
+
+  /* ---------------- Remote link + toggles ---------------- */
+  const setupEl = document.getElementById('setup');
+  const setupText = document.getElementById('setupText');
+  const setupStatus = document.getElementById('setupStatus');
+  const createBucketBtn = document.getElementById('createBucketBtn');
+  const togglesEl = document.getElementById('toggles');
+  const camSwitch = document.getElementById('camSwitch');
+  const bgSwitch = document.getElementById('bgSwitch');
+  const saveNote = document.getElementById('saveNote');
+
+  let bucketId = null;
+
+  async function initRemote(){
+    try {
+      const res = await fetch('config.json', { cache: 'no-store' });
+      const cfg = await res.json();
+      if (cfg.bucketId && cfg.bucketId !== 'REPLACE_ME'){
+        bucketId = cfg.bucketId;
+        togglesEl.style.display = 'flex';
+        setupEl.style.display = 'none';
+        await loadToggleStates();
+      } else {
+        setupEl.style.display = 'block';
+        togglesEl.style.display = 'none';
+      }
+    } catch (err) {
+      setupText.textContent = 'Couldn\u2019t read config.json on this deploy. Make sure it\u2019s in the same folder as this page.';
+      setupEl.style.display = 'block';
+    }
+  }
+
+  createBucketBtn.addEventListener('click', async () => {
+    createBucketBtn.disabled = true;
+    setupStatus.textContent = 'Creating remote link\u2026';
+    try {
+      const res = await fetch('https://kvdb.io/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'email=' + encodeURIComponent('reckon-admin@example.com')
+      });
+      if (!res.ok) throw new Error('bad response');
+      const id = (await res.text()).trim();
+      setupText.innerHTML = 'Copy this ID into <code style="display:inline">bucketId</code> in <b>config.json</b>, save, and redeploy the site. Then reopen this page.';
+      const codeBlock = document.createElement('code');
+      codeBlock.textContent = id;
+      setupStatus.textContent = '';
+      setupEl.insertBefore(codeBlock, createBucketBtn);
+      createBucketBtn.style.display = 'none';
+    } catch (err) {
+      setupStatus.textContent = 'Couldn\u2019t reach the remote store. Check your connection and try again.';
+      createBucketBtn.disabled = false;
+    }
+  });
+
+  async function getToggle(key){
+    try {
+      const res = await fetch(`https://kvdb.io/${bucketId}/${key}`, { cache: 'no-store' });
+      if (!res.ok) return 'on';
+      return (await res.text()).trim();
+    } catch (err) { return 'on'; }
+  }
+
+  async function setToggle(key, value){
+    await fetch(`https://kvdb.io/${bucketId}/${key}`, { method: 'PUT', body: value });
+  }
+
+  async function loadToggleStates(){
+    const [cam, bg] = await Promise.all([getToggle('toggle:camera'), getToggle('toggle:background')]);
+    camSwitch.classList.toggle('on', cam !== 'off');
+    bgSwitch.classList.toggle('on', bg !== 'off');
+  }
+
+  camSwitch.addEventListener('click', async () => {
+    const goingOn = !camSwitch.classList.contains('on');
+    camSwitch.classList.toggle('on', goingOn);
+    saveNote.textContent = 'Saving\u2026';
+    await setToggle('toggle:camera', goingOn ? 'on' : 'off');
+    saveNote.textContent = 'Saved. Reopen the calculator page to see the change.';
+  });
+
+  bgSwitch.addEventListener('click', async () => {
+    const goingOn = !bgSwitch.classList.contains('on');
+    bgSwitch.classList.toggle('on', goingOn);
+    saveNote.textContent = 'Saving\u2026';
+    await setToggle('toggle:background', goingOn ? 'on' : 'off');
+    saveNote.textContent = 'Saved. Reopen the calculator page to see the change.';
+  });
+})();
+</script>
+</body>
+</html>
