@@ -1,0 +1,19 @@
+{
+    "users": [
+        {
+            "name": "sanjay",
+            "password": "12345",
+            "role": "manager"
+        },
+        {
+            "name": "meena",
+            "password": "starfish",
+            "role": "owner"
+        },
+        {
+            "name": "rajesh",
+            "password": "starfish",
+            "role": "owner"
+        }
+    ]
+}
