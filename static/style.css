@@ -1,0 +1,295 @@
+/* ============================================
+   Fun 2 Play — Login
+   Palette: indigo night sky + rainbow arcade accent
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+    --indigo:      #1B1140;
+    --indigo-deep: #120b2c;
+    --red:         #E5192B;
+    --yellow:      #FFC93C;
+    --teal:        #12B8A7;
+    --purple:      #8B3DFF;
+    --blue:        #2E6BFF;
+    --cream:       #FFF9EF;
+    --ink:         #241A45;
+    --muted:       #8C84A8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    font-family: 'Nunito', Arial, sans-serif;
+    background: var(--cream);
+}
+
+/* =========================
+   LEFT SIDE — poster stage
+   ========================= */
+
+.left-panel {
+    width: 52%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(120% 90% at 30% 20%, #2a1a5e 0%, var(--indigo) 45%, var(--indigo-deep) 100%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+}
+
+
+.left-panel::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background: conic-gradient(from 200deg,
+        var(--red), var(--yellow), var(--teal), var(--blue), var(--purple), var(--red));
+    filter: blur(90px);
+    opacity: 0.35;
+    z-index: 0;
+}
+
+/* soft dot texture, arcade-token confetti */
+.left-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    z-index: 0;
+}
+
+.poster-frame {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 640px;
+
+    padding: 10px;
+    border-radius: 26px;
+
+    background: linear-gradient(135deg,
+        var(--red), var(--yellow), var(--teal), var(--purple));
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.55);
+}
+
+.poster-frame-inner {
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--indigo-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Poster: shows the FULL image, never cropped, never scrolled */
+.fun-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+.left-caption {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6%;
+    z-index: 1;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+
+/* =========================
+   RIGHT SIDE — login
+   ========================= */
+
+.right-panel {
+    width: 48%;
+    height: 100vh;
+    background: var(--cream);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.login-box {
+    width: 80%;
+    max-width: 380px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 14px;
+}
+
+.eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--red), var(--yellow), var(--teal), var(--purple));
+}
+
+.login-box h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 38px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    color: var(--ink);
+}
+
+.login-box p {
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 34px;
+}
+
+/* Inputs */
+
+.field-group {
+    margin-bottom: 16px;
+}
+
+.login-box input {
+    width: 100%;
+    height: 52px;
+
+    padding: 0 18px;
+
+    border: 2px solid #EDE8F7;
+    border-radius: 12px;
+    background: #FBF9FF;
+
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    outline: none;
+
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.login-box input::placeholder {
+    color: #B3ACC9;
+    font-weight: 600;
+}
+
+.login-box input:focus {
+    border-color: var(--purple);
+    background: #ffffff;
+}
+
+/* Login button */
+
+.login-box button {
+    width: 100%;
+    height: 54px;
+    margin-top: 8px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: linear-gradient(135deg, var(--red), #ff5a3c);
+    color: white;
+
+    font-family: 'Fredoka', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+
+    cursor: pointer;
+    box-shadow: 0 12px 24px -10px rgba(229, 25, 43, 0.55);
+
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.login-box button:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 16px 28px -10px rgba(229, 25, 43, 0.65);
+}
+
+.login-box button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+@media (max-width: 900px) {
+    html, body { overflow: auto; }
+
+    body { flex-direction: column; }
+
+    .left-panel {
+        width: 100%;
+        height: 40vh;
+        padding: 6% 6%;
+    }
+
+    .left-caption { display: none; }
+
+    .right-panel {
+        width: 100%;
+        height: auto;
+        padding: 40px 0 60px;
+    }
+}
+
+.navbar {
+    background-color: crimson;
+    width: 220px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar h2 {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+}
+
+.navbar a:hover {
+    background-color: #fff;
+    color: crimson;
+}
