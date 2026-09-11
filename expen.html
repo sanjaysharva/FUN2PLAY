@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Expenses | Fun 2 Play</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <meta name="theme-color" content="#000000">
+        <link rel="icon" type="image/jpg" href="{{url_for('static', filename='icon-192.jpg')}}">
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='expen.css') }}">
+    </head>
+    <body>
+
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-name">
+                    <span class="brand-word">Fun</span><span class="brand-chip">2</span><span class="brand-word brand-word--red">Play</span>
+                </span>
+            </div>
+            <div class="nav-divider"></div>
+
+            <div class="sb-section-label">Menu</div>
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg></span>
+                        <span class="label">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="bill" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+                        <span class="label">Billing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="membership" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="4"/><circle cx="8" cy="12.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="10.6" r="1.1" fill="currentColor" stroke="none"/><circle cx="18.2" cy="13.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+                        <span class="label">Membership</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="expense" class="nav-item active">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></span>
+                        <span class="label">Expenses</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="settings" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 005 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.36.4.68.73.88.31.2.68.31 1.06.31H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                        <span class="label">Settings</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-divider"></div>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item logout-link">
+                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+                    <span class="label">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="main-head">
+                <h1>Log an expense</h1>
+                <p class="main-sub">Pick a name, enter the amount, and save.</p>
+            </header>
+
+            <div class="expense-layout">
+
+                <section class="staff-panel">
+                    <div class="staff-panel-head">
+                        <h2>Staff</h2>
+                        <label class="purchase-toggle">
+                            <input type="checkbox" id="companyPurchase">
+                            <span>Company purchase</span>
+                        </label>
+                    </div>
+                    <ul class="staff-list" id="staffList">
+                        <li class="staff-item" data-name="staff1">
+                            <span class="staff-avatar">S1</span>
+                            <span class="staff-name">staff1</span>
+                        </li>
+                        <li class="staff-item" data-name="staff2">
+                            <span class="staff-avatar">S2</span>
+                            <span class="staff-name">staff2</span>
+                        </li>
+                        <li class="staff-item" data-name="staff3">
+                            <span class="staff-avatar">S3</span>
+                            <span class="staff-name">staff3</span>
+                        </li>
+                        <li class="staff-item" data-name="staff4">
+                            <span class="staff-avatar">S4</span>
+                            <span class="staff-name">staff4</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="expense-form-panel">
+                    <form id="expenseForm">
+                        <label class="field">
+                            <span class="field-label">Name</span>
+                            <input type="text" id="nameInput" placeholder="Click a staff name, or type one" required>
+                        </label>
+                        <label class="field">
+                            <span class="field-label">Amount</span>
+                            <input type="number" id="amountInput" placeholder="0.00" step="0.01" min="0" required>
+                        </label>
+                        <label class="field">
+                            <span class="field-label">Reason</span>
+                            <textarea id="reasonInput" rows="4" placeholder="What is this expense for?" required></textarea>
+                        </label>
+                        <button type="submit" class="save-btn">Save expense</button>
+                    </form>
+                    <p id="saveStatus" class="save-status" role="status"></p>
+                </section>
+
+            </div>
+        </main>
+
+        <script src="{{ url_for('static', filename='expen.js') }}"></script>
+    </body>
+</html>

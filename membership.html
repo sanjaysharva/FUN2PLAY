@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Membership | Fun 2 Play</title>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+        <meta name="theme-color" content="#000000">
+        <link rel="icon" type="image/jpg" href="{{url_for('static', filename='icon-192.jpg')}}">
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='mem.css') }}">
+    </head>
+    <body>
+
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-name">
+                    <span class="brand-word">Fun</span><span class="brand-chip">2</span><span class="brand-word brand-word--red">Play</span>
+                </span>
+            </div>
+            <div class="nav-divider"></div>
+
+            <div class="sb-section-label">Menu</div>
+            <ul class="nav-list">
+                <li>
+                    <a href="dashboard" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg></span>
+                        <span class="label">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="bill" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span>
+                        <span class="label">Billing</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="membership" class="nav-item active">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="4"/><circle cx="8" cy="12.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="10.6" r="1.1" fill="currentColor" stroke="none"/><circle cx="18.2" cy="13.6" r="1.1" fill="currentColor" stroke="none"/></svg></span>
+                        <span class="label">Membership</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="expense" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0116 0v1"/></svg></span>
+                        <span class="label">Expenses</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-item">
+                        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 005 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9c.14.36.4.68.73.88.31.2.68.31 1.06.31H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                        <span class="label">Settings</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-divider"></div>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item logout-link">
+                    <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+                    <span class="label">Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <div class="page-heading">
+                <h1>Membership</h1>
+                <p>Search a membership number to preview their Excel sheet</p>
+            </div>
+
+            <div class="membership-layout">
+
+            <div class="excel-preview">
+
+                <!-- Excel-style toolbar -->
+                <div class="excel-toolbar">
+                    <div class="excel-file">
+                        <span class="excel-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </span>
+                        <span id="excelFileName">No file open</span>
+                    </div>
+
+                    <div class="excel-toolbar-actions">
+                        <button class="excel-toolbar-btn" id="excelRefreshBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                            Refresh
+                        </button>
+
+                        <button class="excel-toolbar-btn excel-toolbar-btn--primary" id="excelDownloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Excel-style grid -->
+                <div class="excel-grid-wrap">
+                    <table class="excel-grid">
+                        <thead>
+                            <tr class="excel-col-headers">
+                                <th class="excel-corner"></th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>D</th>
+                                <th>E</th>
+                                <th>F</th>
+                                <th class="excel-action-header" aria-label="Actions"></th>
+                            </tr>
+                            <tr class="excel-field-headers">
+                                <th class="excel-corner"></th>
+                                <th>S.No</th>
+                                <th>Date</th>
+                                <th>Purchase</th>
+                                <th>Balance</th>
+                                <th>Used</th>
+                                <th>Recharged</th>
+                                <th class="excel-action-header">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="excelBody">
+                            <!-- Rows are rendered by mem.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Excel-style sheet tabs -->
+                <div class="excel-sheet-tabs">
+                    <button class="excel-sheet-tab active">Sheet1</button>
+                    <button class="excel-sheet-tab-add">+</button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <aside class="membership-side">
+
+                <!-- Member search -->
+                <div class="member-search-card">
+
+                    <h2>Search Member</h2>
+
+                    <div class="member-search-box">
+                        <input
+                            type="text"
+                            id="memberSearchInput"
+                            placeholder="Membership No."
+                            autocomplete="off"
+                        >
+
+                        <button class="member-search-btn" id="memberSearchBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                            Search
+                        </button>
+                    </div>
+
+                    <p class="member-search-status" id="memberSearchStatus"></p>
+
+                </div>
+
+                <!-- Purchase entry -->
+                <div class="purchase-card">
+
+                    <h2>Purchase Entry</h2>
+
+                    <div class="purchase-field">
+                        <label for="purchaseWrite">Purchase</label>
+                        <input
+                            type="text"
+                            id="purchaseWrite"
+                            placeholder="What was purchased"
+                        >
+                    </div>
+
+                    <div class="purchase-field">
+                        <label for="purchaseBalance">Balance</label>
+                        <input
+                            type="number"
+                            id="purchaseBalance"
+                            placeholder="₹0"
+                        >
+                    </div>
+
+                    <div class="purchase-field">
+                        <label for="purchaseDate">Date</label>
+                        <input
+                            type="date"
+                            id="purchaseDate"
+                        >
+                    </div>
+
+                    <div class="purchase-field">
+                        <label for="purchaseRecharged">Recharged</label>
+                        <input
+                            type="number"
+                            id="purchaseRecharged"
+                            placeholder="₹0"
+                        >
+                    </div>
+
+                    <div class="purchase-field">
+                        <label for="purchaseUsed">Used</label>
+                        <input
+                            type="number"
+                            id="purchaseUsed"
+                            placeholder="₹0"
+                            min="0"
+                            step="0.01"
+                        >
+                    </div>
+
+                    <button class="btn-primary-full" id="purchaseSaveBtn">
+                        Save
+                    </button>
+
+                    <p class="purchase-status" id="purchaseStatus"></p>
+
+                </div>
+
+            </aside>
+
+            </div>
+
+        </main>
+
+        <script src="{{ url_for('static', filename='mem.js') }}"></script>
+
+    </body>
+</html>

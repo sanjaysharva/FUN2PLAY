@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#111111">
+
+    <title>Download App</title>
+
+    <link rel="manifest"
+          href="{{ url_for('static', filename='manifest.json') }}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family: Arial, sans-serif;
+
+            background: #111;
+            color: white;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+
+            text-align: center;
+
+            padding: 45px 30px;
+
+            border-radius: 25px;
+
+            background: #1b1b1b;
+
+            box-shadow: 0 20px 60px rgba(0,0,0,.5);
+        }
+
+        .icon {
+            width: 110px;
+            height: 110px;
+
+            border-radius: 25px;
+
+            object-fit: cover;
+
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+        }
+
+        p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        #installButton {
+            display: none;
+
+            width: 100%;
+
+            margin-top: 25px;
+
+            padding: 15px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: white;
+            color: black;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+        #installButton:hover {
+            opacity: .85;
+        }
+
+        #message {
+            margin-top: 25px;
+            color: #aaa;
+        }
+
+        .manual {
+            display: none;
+
+            margin-top: 25px;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: #252525;
+
+            color: #ccc;
+
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img
+        class="icon"
+        src="{{ url_for('static', filename='icon-192.jpg') }}"
+        alt="App Icon"
+    >
+
+    <h1>Install App</h1>
+
+    <p>
+        Install this web app on your PC for quick access,
+        without opening the browser every time.
+    </p>
+
+    <button id="installButton">
+        Install App
+    </button>
+
+    <div id="message">
+        Checking whether your browser supports installation...
+    </div>
+
+    <div id="manual" class="manual">
+        <b>Can't see the Install button?</b>
+        <br><br>
+        Open this page in Chrome or Edge and look for the
+        <b>Install</b> icon in the address bar.
+    </div>
+
+</div>
+
+
+<script>
+
+let deferredPrompt = null;
+
+const installButton =
+    document.getElementById("installButton");
+
+const message =
+    document.getElementById("message");
+
+const manual =
+    document.getElementById("manual");
+
+
+// Register service worker
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", async () => {
+
+        try {
+
+            const registration =
+                await navigator.serviceWorker.register(
+                    "{{ url_for('static', filename='service-worker.js') }}"
+                );
+
+            console.log(
+                "Service Worker registered:",
+                registration.scope
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Service Worker registration failed:",
+                error
+            );
+
+        }
+
+    });
+
+}
+
+
+// Chrome / Edge tells us the PWA can be installed
+window.addEventListener(
+    "beforeinstallprompt",
+    (event) => {
+
+        console.log("PWA install available");
+
+        event.preventDefault();
+
+        deferredPrompt = event;
+
+        installButton.style.display = "block";
+
+        message.innerHTML =
+            "Your app is ready to install.";
+
+    }
+);
+
+
+// Install button
+installButton.addEventListener(
+    "click",
+    async () => {
+
+        if (!deferredPrompt) {
+
+            manual.style.display = "block";
+
+            return;
+        }
+
+        deferredPrompt.prompt();
+
+        const result =
+            await deferredPrompt.userChoice;
+
+        console.log(
+            "Install result:",
+            result.outcome
+        );
+
+        deferredPrompt = null;
+
+        installButton.style.display = "none";
+
+        if (result.outcome === "accepted") {
+
+            message.innerHTML =
+                "App installed successfully!";
+
+        } else {
+
+            message.innerHTML =
+                "Installation cancelled.";
+
+        }
+
+    }
+);
+
+
+// User has installed the app
+window.addEventListener(
+    "appinstalled",
+    () => {
+
+        console.log("PWA installed");
+
+        deferredPrompt = null;
+
+        installButton.style.display = "none";
+
+        message.innerHTML =
+            "App installed successfully!";
+
+    }
+);
+
+
+// If browser doesn't expose beforeinstallprompt
+setTimeout(() => {
+
+    if (!deferredPrompt) {
+
+        manual.style.display = "block";
+
+        message.innerHTML =
+            "Your browser may require installation from the browser menu.";
+
+    }
+
+}, 3000);
+
+</script>
+
+</body>
+</html>

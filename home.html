@@ -1,0 +1,63 @@
+<!-- UMay think this is made of ai but only god knows who made this  -->
+ <!-- it took me 14 days to complete just frontend -->
+<!-- i got totally 42 bugs and solved it everytimes -->
+<!-- if u modify pls update the time of work and no. of bugs-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun 2 Play</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <meta name="description" content="Fun 2 Play is an arcade and play area that offers a variety of games and activities for all ages. Enjoy our food and have fun!">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/jpg" href="{{url_for('static', filename='icon-192.jpg')}}">
+</head>
+
+<body>
+
+    <!-- LEFT -->
+    <section class="left-panel">
+        <div class="poster-frame">
+            <div class="poster-frame-inner">
+                <img
+                    src="{{ url_for('static', filename='image/ban.png') }}"
+                    alt="Fun 2 Play — Arcade, Play Areas, Food"
+                    class="fun-image"
+                >
+            </div>
+        </div>
+        <p class="left-caption">Arcade &nbsp;·&nbsp; Play Areas &nbsp;·&nbsp; Food</p>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="right-panel">
+        <div class="login-box">
+            <span class="eyebrow">Staff Login</span>
+            <h1>Welcome Back!</h1>
+            <p>Login to Fun 2 Play</p>
+
+            <div class="field-group">
+                <input type="text" placeholder="Username" id="username">
+            </div>
+            <div class="field-group">
+                <input type="password" placeholder="Password" id="password">
+            </div>
+
+            <button onclick="validateForm()">LOGIN</button>
+        </div>
+    </section>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/static/sw.js")
+        .then(() => console.log("Service Worker registered"))
+        .catch(err => console.error(err));
+}
+</script>
+</body>
+</html>
